@@ -1,0 +1,370 @@
+#+TITLE: An Abridged Coq Introduction
+#+AUTHOR: Mike Nahas (arr. Edward Hart)
+
+Today, we'll be proving simple theorems using the Coq proof assistant. Coq uses an ML-like language to describe proofs.
+
+This introduction is an abridged version of Mike Nahas' tutorial at  <https://coq.inria.fr/tutorial-nahas>.
+
+* Part 1
+
+** Getting started
+
+ * Install CoqIDE using =sudo apt install coqide= (or similar) from <http://coq.inria.fr/download>.
+ * If you want to use this with Emacs, install Proof General mode from <http://proofgeneral.inf.ed.ac.uk/>.
+
+Coq source files have a =.v= extension.
+
+** Syntax basics
+
+#+BEGIN_SRC coq
+Theorem my_first_proof : (forall A : prop, A -> A).
+Proof.
+    (* This is a comment *)
+    intros A.
+    intros proof_of_A.
+    exact proof_of_A.
+Qed.
+#+END_SRC
+
+ * Every coq command ends with a full stop.
+ * The *vernacular* commands begin with a capital letter; they define the structure of the proof.
+ * The *tactics* commands begin with a lowercase letter; they are /how/ you want Coq to prove them.
+ * The statement we want to prove comes after =my_first_proof=. It says "for all Props A, A implies A".
+ * A *Prop*, or proposition, is something that can have a proof. It does not make sense to say a proposition is true or false! It either /has a proof/ or it doesn't. (Truth values do exist in Coq, but we'll introduce them later.)
+ * =intros= is how you instantiate something you assume to exist.
+ * So, the first three lines of the Proof block instantiates a Prop called A and a proof of that Prop A.
+ * =exact= tells Coq that we have reached our goal.
+
+** IDE basics
+
+Step through the proof line-by-line. For the first line, we see
+
+#+BEGIN_SRC coq-goals
+1 subgoal, subgoal 1 (ID 1)
+
+  ============================
+  forall A : Prop, A -> A
+#+END_SRC
+
+The *subgoal*, shown beneath the ruled line, is what we need to prove the Theorem.
+
+Next line:
+
+#+BEGIN_SRC coq-goals
+1 subgoal, subgoal 1 (ID 2)
+
+  A : Prop
+  ============================
+  A -> A
+#+END_SRC
+
+The =intros= command has popped off the =A : Prop= from the =forall=. By assuming this arbitrary A exists, the subgoal is simplified to showing that the implication =A -> A= holds.
+
+#+BEGIN_SRC coq-goals
+1 subgoal, subgoal 1 (ID 3)
+
+  A : Prop
+  proof_of_A : A
+  ============================
+  A
+#+END_SRC
+
+Now we assume the condition of =A -> A=, namely that the Proposition A is true, i.e. that A has been proved. Now we just need to show A is proved. But we've assumed that A is proved, which is =exact=-ly what we need to conclude the proof.
+
+** Wait a minute:
+
+Don't =forall= and =->= have the logical meaning? Yes, they do and when you don't need to define new variables, you can swap freely between them.
+
+** Exercises
+
+1. Extend =my_first_proof= to prove the that =forall A : Prop, A -> A -> A=.
+
+* Part 2
+** More tactics
+
+ * A *forward proof* creates larger and more complex hypotheses until it reaches the goal. For example,
+
+#+BEGIN_SRC coq
+Theorem forward_small : (forall A B : Prop, A -> (A->B) -> B).
+Proof.
+ intros A.
+ intros B.
+ intros proof_of_A.
+ intros A_implies_B.
+ pose (proof_of_B := A_implies_B proof_of_A). (* See below *)
+ exact proof_of_B.
+Qed.
+#+END_SRC
+
+ * Here, The =pose= tactic assigns the result of "=A_implies_B proof_of_A=", i.e. it computes a proof of B using the given proof of B, to a new variable. See the how the =pose= changes the state:
+
+#+BEGIN_SRC coq-goals
+1 subgoal, subgoal 1 (ID 5)
+
+  A, B : Prop
+  proof_of_A : A
+  A_implies_B : A -> B
+  ============================
+  B
+#+END_SRC
+
+After:
+
+#+BEGIN_SRC coq-goals
+1 subgoal, subgoal 1 (ID 7)
+
+  A, B : Prop
+  proof_of_A : A
+  A_implies_B : A -> B
+  proof_of_B := A_implies_B proof_of_A : B
+  ============================
+  B
+#+END_SRC
+
+ * A *backwards proof* breaks the goal into smaller and simpler subgoals.
+
+#+BEGIN_SRC coq
+Theorem backward_small : (forall A B : Prop, A -> (A->B)->B).
+Proof.
+ intros A B.
+ intros proof_of_A A_implies_B.
+ refine (A_implies_B _).
+   exact proof_of_A.
+Qed.
+#+END_SRC
+
+ * Given a prop, the =refine= tactic changes the subgoal to be the unknowns (indicated by =_=) which, combined with the Prop, would give the current subgoal. Here, given =A_implies_B=, Coq changes the subgoal from =B= to =A=, since combining a proof of A with the implication =A_implies_B= would let you conclude B.
+ * Note the =refine= may have multiple unknowns, giving multiple goals! Then you will need multiple =exact= commands.
+
+** Exercises
+
+1. Prove =forall A B C : Prop, A -> (A->B) -> (B->C) -> C= forwards.
+2. Prove the same thing backwards.
+3. Prove =forall A B C : Prop, A -> (A->B) -> (A->B->C) -> C= forwards.
+4. Prove the same thing backwards.
+
+* Part 3
+** True and False and more tactics
+
+Coq has two built-in values =True= and =False=, but these are not Booleans! They are Props: =True= is the proposition with a proof =I= and =False= has no proof. Example:
+
+#+BEGIN_SRC coq
+Theorem True_can_be_proven : True.
+  exact I.
+Qed.
+#+END_SRC
+
+There is a built-in =not= operator, with shorthand =~=, to prove a Prop has no proofs.
+
+#+BEGIN_SRC coq
+Theorem False_cannot_be_proven : ~False.
+Proof.
+  unfold not. (* See below *)
+  intros proof_of_False.
+  exact proof_of_False.
+Qed.
+#+END_SRC
+
+The =unfold= command expands the definition of not so that we can get something to use with =intros=.
+
+But it's a bit awkward to talk about the proof of something unprovable. This is a more natural way to write it:
+
+#+BEGIN_SRC coq
+Theorem False_cannot_be_proven__again : ~False.
+Proof.
+  intros proof_of_False.
+  case proof_of_False.
+Qed.
+#+END_SRC
+
+=case= creates subgoals for every possible construction of its argument. Here, since =False= has no proof, it creates no subgoals, thus completing the proof.
+
+We can use =case= to formalise /reductio ad absurdum/ arguments.
+
+#+BEGIN_SRC coq
+Theorem absurd2 : forall A C : Prop, A -> ~ A -> C.
+(* There's no C in our hypothesis ---^^^^^^^^,
+   so we can't use the exact command. *)
+Proof.
+  intros A C.
+  intros proof_of_A proof_that_A_cannot_be_proven.
+  unfold not in proof_that_A_cannot_be_proven.
+  pose (proof_of_False := proof_that_A_cannot_be_proven proof_of_A).
+  case proof_of_False.
+Qed.
+#+END_SRC
+
+** Types, definitions and notation
+
+"But, Ed," someone is doubtless saying, "What about Haskell?" To that person, I say here are your damn abstract data types.
+
+#+BEGIN_SRC coq
+Inductive False : Prop := .
+
+Inductive True : Prop :=
+  I : True.
+
+Inductive bool : Set :=
+  | true : bool
+  | false : bool.
+#+END_SRC
+
+=Inductive= is so named because you can define types inductively (as we'll see later).
+
+Coq also provides =Definition= and =Notation= vernaculars to abbreviate things.
+
+#+BEGIN_SRC coq
+(* This indicates (not A) and A -> False are interchangable *)
+Definition not (A:Prop) := A -> False.
+
+(* This creates an operator *)
+Notation "~ x" := (not x) : type_scope.
+#+END_SRC
+
+** Booleans
+
+The =bool= type is in the library =Bool=, which you load with
+
+#+BEGIN_SRC coq
+Require Import Bool.
+#+END_SRC
+
+Two functions it includes are:
+
+#+BEGIN_SRC coq
+Definition eqb (b1 b2:bool) : bool :=
+  match b1, b2 with
+    | true, true => true
+    | true, false => false
+    | false, true => false
+    | false, false => true
+  end.
+
+Definition Is_true (b:bool) :=
+  match b with
+    | true => True
+    | false => False
+  end.
+#+END_SRC
+
+We see =True= is true:
+
+#+BEGIN_SRC coq
+Theorem true_is_True: Is_true true.
+Proof.
+  simpl.
+  exact I.
+Qed.
+#+END_SRC
+
+The tactic =simpl= simplifies the subgoal by evaluating the function on its arguments. Here's another application of =simpl=:
+
+#+BEGIN_SRC coq
+Theorem not_eqb_true_false: ~(Is_true (eqb true false)).
+Proof.
+  simpl.
+  exact False_cannot_be_proven.
+Qed.
+#+END_SRC
+
+We want some operations on Booleans. Here's or:
+
+#+BEGIN_SRC coq
+Inductive or (A B:Prop) : Prop :=
+  | or_introl : A -> A \/ B
+  | or_intror : B -> A \/ B
+where "A \/ B" := (or A B) : type_scope.
+#+END_SRC
+
+This defines four things:
+
+ 1. =or=, a function which takes two Props and produces one Prop.
+ 2. =or_introl=, a constructor that takes a proof of =A= and returns a proof of =(or A B)=.
+ 3. =or_intror=, a constructor that takes a proof of =B= and returns a proof of =(or A B)=.
+ 4. =\/= an operator interchangable with =or=.
+
+=and= is defined by
+
+#+BEGIN_SRC coq
+Inductive and (A B:Prop) : Prop :=
+  conj : A -> B -> A /\ B
+
+where "A /\ B" := (and A B) : type_scope.
+#+END_SRC
+
+** One final tactic
+
+The =destruct= tactic is a little more versatile than =case=. It's recommended for types which have a single constructor (like =and=).
+
+#+BEGIN_SRC coq
+Theorem and_commutes__again : (forall A B, A /\ B -> B /\ A).
+Proof.
+  intros A B.
+  intros A_and_B.
+  destruct A_and_B as [ proof_of_A proof_of_B].
+  refine (conj _ _).
+    exact proof_of_B.
+
+    exact proof_of_A.
+Qed.
+#+END_SRC
+
+** Exercises
+
+ 1. Prove =~(True -> False)= using =refine=.
+ 2. Adapt the proofs in part 1 to use bools instead of Props.
+ 3. Prove =(forall a : bool, Is_true (eqb a a))= using "=case a.=".
+ 4. Prove =(forall A B : Prop, A -> A \/ B)=. [Hint: you will need to one of =or_introl= and =or_intror=.]
+ 5. Prove =or= commutes.
+ 6. Prove =(forall A B : Prop, A -> B -> A /\ B)=.
+ 7. Prove =and= commutes without using =case= instead of =destruct=.
+
+* Part 4
+
+** Booleans continued
+
+We saw earlier that =and= and =or= Props were not functions, but Inductive types, where we defined instances that can only be defined by calling obscure functions called constructors. =bool= is an Inductive type, with constructors =true= and =false=. =true= and =false= have no arguments, so they are more like constants than functions. 
+
+To manipulate bools, we could use Inductive types like we did for Prop, but it will be easier to use functions. Some built-in ones are:
+
+ * =andb=, with operator =&&=.
+ * =orb=, with operator space.
+ * =negb=.
+ * =iff=, with operator =<->=.
+
+** More tactics
+
+ * If a hypothesis (=intros H.=) contains a function call with all its arguments, then use =simpl in H= to expand it.
+ * The =admit= tactic marks the proof as complete, even if some subgoals are complete. [Exercises completed using =admit= are not acceptable.]
+
+** Exercises
+
+1. Prove =(forall a b, Is_true (orb a b) <-> Is_true a \/ Is_true b)=. [Hint: you'll need every tactic we've seen so far.]
+2. Prove the same thing with =andb= and =/\=.
+3. Prove the same thing with =negb= and =~=.
+
+* What's next?
+
+That is, what sections of Mike Nahas' tutorial have I not got round to abridging? What remains are introduction to quantifiers, the natural numbers (=nat=) and lists.
+
+* Revision guide
+
+ * If the subgoal starts with "=(forall <name> : <type>, ...=" Then use tactic "=intros <name>.="
+ * If the subgoal starts with "=<type> -> ...=" Then use tactic "=intros <name>.="
+ * If the subgoal matches an hypothesis, Then use tactic "=exact <hyp_name>.="
+ * If you have an hypothesis "=<hyp_name>: <type1> -> <type2> -> ... -> <result_type>=" OR an hypothesis "=<hyp_name>: (forall <obj1>:<type1>, (forall <obj2>:<type2>, ... <result_type> ...))=" OR any combination of "=->=" and "=forall", AND you have hypotheses of type "=type1", "=type2="..., Then use tactic "=pose=" to create something of type "=result_type=".
+ * If you have subgoal "=<goal_type>=" AND have hypothesis "=<hyp_name>: <type1> -> <type2> -> ... -> <typeN> -> <goal_type>", Then use tactic "=refine (<hyp_name> _ ...).=" with N underscores.
+ * If your subgoal is "=True", Then use tactic "=exact I=".
+ * If your subgoal is "=~<type>=" or "=~(<term>)=" or "=(not <term>)", Then use tactic "=intros=".
+ * If any hypothesis is "=<name> : False", Then use tactic "=case <name>.="
+ * If the current subgoal contains a function call with all its arguments, Then use the tactic "=simpl=".
+ * If there is a hypothesis "=<name>=" of a created type AND that hypothesis is used in the subgoal, Then you can try the tactic "=case <name>="
+ * If the subgoal's top-most term is a created type, Then use "=refine (<name_of_constructor> _ ...)=".
+ * If a hypothesis "=<name>=" is a created type with only one constructor, Then use "=destruct <name> as <arg1> <arg2> ... "= to extract its arguments
+ * If a hypothesis "=<name>=" contain a function call with all its arguments, Then use the tactic "=simpl in <name>="
+ * If you have a subgoal that you want to ignore for a while, Then use the tactic "=admit"
+ * If the current subgoal starts "=exists <name>, ...=" Then create a witness and use "=refine (ex_intro _ witness _)="
+ * If you have a hypothesis "~<name> : <a> = <b>~" AND "=<a>=" in your current subgoal Then use the tactic "=rewrite <name>="
+ * If you have a hypothesis "~<name> : <a> = <b>~" AND "=<b>=" in your current subgoal Then use the tactic "=rewrite <- <name>="
+ * If you have a hypothesis "~<name> : (<constructor1> ...) = (<constructor2> ...)~" OR "~<name> : <constant1> = <constant2>~", then use the tactic "=discriminate <name>="
+ * If there is a hypothesis "=<name>=" of a created type AND that hypothesis is used in the subgoal, AND the type has a recursive definition Then you can try the tactic "=elim <name>="

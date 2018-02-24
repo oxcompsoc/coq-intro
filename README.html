@@ -1,0 +1,821 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2018-02-24 Sat 00:30 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>An Abridged Coq Introduction</title>
+<meta name="generator" content="Org mode" />
+<meta name="author" content="Mike Nahas (arr. Edward Hart)" />
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #ccc;
+    box-shadow: 3px 3px 3px #eee;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: visible;
+    padding-top: 1.2em;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    background-color: white;
+    top: -10px;
+    right: 10px;
+    padding: 3px;
+    border: 1px solid black;
+  }
+  pre.src:hover:before { display: inline;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { width: 90%; }
+  /*]]>*/-->
+</style>
+<script type="text/javascript">
+/*
+@licstart  The following is the entire license notice for the
+JavaScript code in this tag.
+
+Copyright (C) 2012-2018 Free Software Foundation, Inc.
+
+The JavaScript code in this tag is free software: you can
+redistribute it and/or modify it under the terms of the GNU
+General Public License (GNU GPL) as published by the Free Software
+Foundation, either version 3 of the License, or (at your option)
+any later version.  The code is distributed WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+
+As additional permission under GNU GPL version 3 section 7, you
+may distribute non-source (e.g., minimized or compacted) forms of
+that code without the copy of the GNU GPL normally required by
+section 4, provided you include this license notice and a URL
+through which recipients can access the Corresponding Source.
+
+
+@licend  The above is the entire license notice
+for the JavaScript code in this tag.
+*/
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+</head>
+<body>
+<div id="content">
+<h1 class="title">An Abridged Coq Introduction</h1>
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#orgc4203ac">1. Part 1</a>
+<ul>
+<li><a href="#orgab80a14">1.1. Getting started</a></li>
+<li><a href="#org2419235">1.2. Syntax basics</a></li>
+<li><a href="#org3d1d470">1.3. IDE basics</a></li>
+<li><a href="#orgb326d82">1.4. Wait a minute:</a></li>
+<li><a href="#org418a906">1.5. Exercises</a></li>
+</ul>
+</li>
+<li><a href="#org8131a3b">2. Part 2</a>
+<ul>
+<li><a href="#orgdf464cf">2.1. More tactics</a></li>
+<li><a href="#org02a7b92">2.2. Exercises</a></li>
+</ul>
+</li>
+<li><a href="#orge12103c">3. Part 3</a>
+<ul>
+<li><a href="#orgf080a43">3.1. True and False and more tactics</a></li>
+<li><a href="#org5019d5a">3.2. Types, definitions and notation</a></li>
+<li><a href="#org25bd629">3.3. Booleans</a></li>
+<li><a href="#org0020980">3.4. One final tactic</a></li>
+<li><a href="#org092691a">3.5. Exercises</a></li>
+</ul>
+</li>
+<li><a href="#orgd0c0e80">4. Part 4</a>
+<ul>
+<li><a href="#org1dbadd0">4.1. Booleans continued</a></li>
+<li><a href="#orgd07488d">4.2. More tactics</a></li>
+<li><a href="#orgf5de3fd">4.3. Exercises</a></li>
+</ul>
+</li>
+<li><a href="#org1724a9d">5. What's next?</a></li>
+<li><a href="#org33ed89e">6. Revision guide</a></li>
+</ul>
+</div>
+</div>
+<p>
+Today, we'll be proving simple theorems using the Coq proof assistant. Coq uses an ML-like language to describe proofs.
+</p>
+
+<p>
+This introduction is an abridged version of Mike Nahas' tutorial at  <a href="https://coq.inria.fr/tutorial-nahas">https://coq.inria.fr/tutorial-nahas</a>.
+</p>
+
+<div id="outline-container-orgc4203ac" class="outline-2">
+<h2 id="orgc4203ac"><span class="section-number-2">1</span> Part 1</h2>
+<div class="outline-text-2" id="text-1">
+</div>
+<div id="outline-container-orgab80a14" class="outline-3">
+<h3 id="orgab80a14"><span class="section-number-3">1.1</span> Getting started</h3>
+<div class="outline-text-3" id="text-1-1">
+<ul class="org-ul">
+<li>Install CoqIDE using <code>sudo apt install coqide</code> (or similar) from <a href="http://coq.inria.fr/download">http://coq.inria.fr/download</a>.</li>
+<li>If you want to use this with Emacs, install Proof General mode from <a href="http://proofgeneral.inf.ed.ac.uk/">http://proofgeneral.inf.ed.ac.uk/</a>.</li>
+</ul>
+
+<p>
+Coq source files have a <code>.v</code> extension.
+</p>
+</div>
+</div>
+
+<div id="outline-container-org2419235" class="outline-3">
+<h3 id="org2419235"><span class="section-number-3">1.2</span> Syntax basics</h3>
+<div class="outline-text-3" id="text-1-2">
+<div class="org-src-container">
+<pre class="src src-coq"><span style="color: #d73a49;">Theorem</span> <span style="color: #6f42c1;">my_first_proof</span> : (<span style="color: #005cc5;">forall</span> <span style="color: #24292e;">A</span> : prop, A -&gt; A).
+<span style="color: #d73a49;">Proof</span>.
+    <span style="color: #6a737d;">(* </span><span style="color: #6a737d;">This is a comment </span><span style="color: #6a737d;">*)</span>
+    <span style="color: #005cc5; background-color: #ffffff;">intros</span> A.
+    <span style="color: #005cc5; background-color: #ffffff;">intros</span> proof_of_A.
+    <span style="color: #005cc5;">exact</span> proof_of_A.
+<span style="color: #d73a49;">Qed</span>.
+</pre>
+</div>
+
+<ul class="org-ul">
+<li>Every coq command ends with a full stop.</li>
+<li>The <b>vernacular</b> commands begin with a capital letter; they define the structure of the proof.</li>
+<li>The <b>tactics</b> commands begin with a lowercase letter; they are <i>how</i> you want Coq to prove them.</li>
+<li>The statement we want to prove comes after <code>my_first_proof</code>. It says "for all Props A, A implies A".</li>
+<li>A <b>Prop</b>, or proposition, is something that can have a proof. It does not make sense to say a proposition is true or false! It either <i>has a proof</i> or it doesn't. (Truth values do exist in Coq, but we'll introduce them later.)</li>
+<li><code>intros</code> is how you instantiate something you assume to exist.</li>
+<li>So, the first three lines of the Proof block instantiates a Prop called A and a proof of that Prop A.</li>
+<li><code>exact</code> tells Coq that we have reached our goal.</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org3d1d470" class="outline-3">
+<h3 id="org3d1d470"><span class="section-number-3">1.3</span> IDE basics</h3>
+<div class="outline-text-3" id="text-1-3">
+<p>
+Step through the proof line-by-line. For the first line, we see
+</p>
+
+<div class="org-src-container">
+<pre class="src src-coq-goals">1 subgoal, subgoal 1 (ID 1)
+
+  ============================
+  <span style="color: #005cc5;">forall</span> <span style="color: #24292e;">A</span> : <span style="color: #005cc5;">Prop</span>, A -&gt; A
+</pre>
+</div>
+
+<p>
+The <b>subgoal</b>, shown beneath the ruled line, is what we need to prove the Theorem.
+</p>
+
+<p>
+Next line:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-coq-goals">1 subgoal, subgoal 1 (ID 2)
+
+  <span style="color: #d73a49;">A : </span><span style="color: #005cc5;">Prop</span>
+  ============================
+  A -&gt; A
+</pre>
+</div>
+
+<p>
+The <code>intros</code> command has popped off the <code>A : Prop</code> from the <code>forall</code>. By assuming this arbitrary A exists, the subgoal is simplified to showing that the implication <code>A -&gt; A</code> holds.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-coq-goals">1 subgoal, subgoal 1 (ID 3)
+
+  <span style="color: #d73a49;">A : </span><span style="color: #005cc5;">Prop</span>
+  <span style="color: #d73a49;">proof_of_A : </span>A
+  ============================
+  A
+</pre>
+</div>
+
+<p>
+Now we assume the condition of <code>A -&gt; A</code>, namely that the Proposition A is true, i.e. that A has been proved. Now we just need to show A is proved. But we've assumed that A is proved, which is <code>exact</code>-ly what we need to conclude the proof.
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgb326d82" class="outline-3">
+<h3 id="orgb326d82"><span class="section-number-3">1.4</span> Wait a minute:</h3>
+<div class="outline-text-3" id="text-1-4">
+<p>
+Don't <code>forall</code> and <code>-&gt;</code> have the logical meaning? Yes, they do and when you don't need to define new variables, you can swap freely between them.
+</p>
+</div>
+</div>
+
+<div id="outline-container-org418a906" class="outline-3">
+<h3 id="org418a906"><span class="section-number-3">1.5</span> Exercises</h3>
+<div class="outline-text-3" id="text-1-5">
+<ol class="org-ol">
+<li>Extend <code>my_first_proof</code> to prove the that <code>forall A : Prop, A -&gt; A -&gt; A</code>.</li>
+</ol>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org8131a3b" class="outline-2">
+<h2 id="org8131a3b"><span class="section-number-2">2</span> Part 2</h2>
+<div class="outline-text-2" id="text-2">
+</div>
+<div id="outline-container-orgdf464cf" class="outline-3">
+<h3 id="orgdf464cf"><span class="section-number-3">2.1</span> More tactics</h3>
+<div class="outline-text-3" id="text-2-1">
+<ul class="org-ul">
+<li>A <b>forward proof</b> creates larger and more complex hypotheses until it reaches the goal. For example,</li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-coq"><span style="color: #d73a49;">Theorem</span> <span style="color: #6f42c1;">forward_small</span> : (<span style="color: #005cc5;">forall</span> <span style="color: #24292e;">A B</span> : <span style="color: #005cc5;">Prop</span>, A -&gt; (A-&gt;B) -&gt; B).
+<span style="color: #d73a49;">Proof</span>.
+ <span style="color: #005cc5; background-color: #ffffff;">intros</span> A.
+ <span style="color: #005cc5; background-color: #ffffff;">intros</span> B.
+ <span style="color: #005cc5; background-color: #ffffff;">intros</span> proof_of_A.
+ <span style="color: #005cc5; background-color: #ffffff;">intros</span> A_implies_B.
+ <span style="color: #005cc5; background-color: #ffffff;">pose</span> (proof_of_B := A_implies_B proof_of_A). <span style="color: #6a737d;">(* </span><span style="color: #6a737d;">See below </span><span style="color: #6a737d;">*)</span>
+ <span style="color: #005cc5;">exact</span> proof_of_B.
+<span style="color: #d73a49;">Qed</span>.
+</pre>
+</div>
+
+<ul class="org-ul">
+<li>Here, The <code>pose</code> tactic assigns the result of "<code>A_implies_B proof_of_A</code>", i.e. it computes a proof of B using the given proof of B, to a new variable. See the how the <code>pose</code> changes the state:</li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-coq-goals">1 subgoal, subgoal 1 (ID 5)
+
+  <span style="color: #d73a49;">A, B : </span><span style="color: #005cc5;">Prop</span>
+  <span style="color: #d73a49;">proof_of_A : </span>A
+  <span style="color: #d73a49;">A_implies_B : </span>A -&gt; B
+  ============================
+  B
+</pre>
+</div>
+
+<p>
+After:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-coq-goals">1 subgoal, subgoal 1 (ID 7)
+
+  <span style="color: #d73a49;">A, B : </span><span style="color: #005cc5;">Prop</span>
+  <span style="color: #d73a49;">proof_of_A : </span>A
+  <span style="color: #d73a49;">A_implies_B : </span>A -&gt; B
+  proof_of_B := A_implies_B proof_of_A : B
+  ============================
+  B
+</pre>
+</div>
+
+<ul class="org-ul">
+<li>A <b>backwards proof</b> breaks the goal into smaller and simpler subgoals.</li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-coq"><span style="color: #d73a49;">Theorem</span> <span style="color: #6f42c1;">backward_small</span> : (<span style="color: #005cc5;">forall</span> <span style="color: #24292e;">A B</span> : <span style="color: #005cc5;">Prop</span>, A -&gt; (A-&gt;B)-&gt;B).
+<span style="color: #d73a49;">Proof</span>.
+ <span style="color: #005cc5; background-color: #ffffff;">intros</span> A B.
+ <span style="color: #005cc5; background-color: #ffffff;">intros</span> proof_of_A A_implies_B.
+ <span style="color: #005cc5; background-color: #ffffff;">refine</span> (A_implies_B _).
+   <span style="color: #005cc5;">exact</span> proof_of_A.
+<span style="color: #d73a49;">Qed</span>.
+</pre>
+</div>
+
+<ul class="org-ul">
+<li>Given a prop, the <code>refine</code> tactic changes the subgoal to be the unknowns (indicated by <code>_</code>) which, combined with the Prop, would give the current subgoal. Here, given <code>A_implies_B</code>, Coq changes the subgoal from <code>B</code> to <code>A</code>, since combining a proof of A with the implication <code>A_implies_B</code> would let you conclude B.</li>
+<li>Note the <code>refine</code> may have multiple unknowns, giving multiple goals! Then you will need multiple <code>exact</code> commands.</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org02a7b92" class="outline-3">
+<h3 id="org02a7b92"><span class="section-number-3">2.2</span> Exercises</h3>
+<div class="outline-text-3" id="text-2-2">
+<ol class="org-ol">
+<li>Prove <code>forall A B C : Prop, A -&gt; (A-&gt;B) -&gt; (B-&gt;C) -&gt; C</code> forwards.</li>
+<li>Prove the same thing backwards.</li>
+<li>Prove <code>forall A B C : Prop, A -&gt; (A-&gt;B) -&gt; (A-&gt;B-&gt;C) -&gt; C</code> forwards.</li>
+<li>Prove the same thing backwards.</li>
+</ol>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orge12103c" class="outline-2">
+<h2 id="orge12103c"><span class="section-number-2">3</span> Part 3</h2>
+<div class="outline-text-2" id="text-3">
+</div>
+<div id="outline-container-orgf080a43" class="outline-3">
+<h3 id="orgf080a43"><span class="section-number-3">3.1</span> True and False and more tactics</h3>
+<div class="outline-text-3" id="text-3-1">
+<p>
+Coq has two built-in values <code>True</code> and <code>False</code>, but these are not Booleans! They are Props: <code>True</code> is the proposition with a proof <code>I</code> and <code>False</code> has no proof. Example:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-coq"><span style="color: #d73a49;">Theorem</span> <span style="color: #6f42c1;">True_can_be_proven</span> : <span style="color: #005cc5;">True</span>.
+  <span style="color: #005cc5;">exact</span> I.
+<span style="color: #d73a49;">Qed</span>.
+</pre>
+</div>
+
+<p>
+There is a built-in <code>not</code> operator, with shorthand <code>~</code>, to prove a Prop has no proofs.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-coq"><span style="color: #d73a49;">Theorem</span> <span style="color: #6f42c1;">False_cannot_be_proven</span> : ~<span style="color: #005cc5;">False</span>.
+<span style="color: #d73a49;">Proof</span>.
+  <span style="color: #005cc5; background-color: #ffffff;">unfold</span> not. <span style="color: #6a737d;">(* </span><span style="color: #6a737d;">See below </span><span style="color: #6a737d;">*)</span>
+  <span style="color: #005cc5; background-color: #ffffff;">intros</span> proof_of_False.
+  <span style="color: #005cc5;">exact</span> proof_of_False.
+<span style="color: #d73a49;">Qed</span>.
+</pre>
+</div>
+
+<p>
+The <code>unfold</code> command expands the definition of not so that we can get something to use with <code>intros</code>.
+</p>
+
+<p>
+But it's a bit awkward to talk about the proof of something unprovable. This is a more natural way to write it:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-coq"><span style="color: #d73a49;">Theorem</span> <span style="color: #6f42c1;">False_cannot_be_proven__again</span> : ~<span style="color: #005cc5;">False</span>.
+<span style="color: #d73a49;">Proof</span>.
+  <span style="color: #005cc5; background-color: #ffffff;">intros</span> proof_of_False.
+  <span style="color: #005cc5; background-color: #ffffff;">case</span> proof_of_False.
+<span style="color: #d73a49;">Qed</span>.
+</pre>
+</div>
+
+<p>
+<code>case</code> creates subgoals for every possible construction of its argument. Here, since <code>False</code> has no proof, it creates no subgoals, thus completing the proof.
+</p>
+
+<p>
+We can use <code>case</code> to formalise <i>reductio ad absurdum</i> arguments.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-coq"><span style="color: #d73a49;">Theorem</span> <span style="color: #6f42c1;">absurd2</span> : <span style="color: #005cc5;">forall</span> <span style="color: #24292e;">A C</span> : <span style="color: #005cc5;">Prop</span>, A -&gt; ~ A -&gt; C.
+<span style="color: #6a737d;">(* </span><span style="color: #6a737d;">There's no C in our hypothesis ---^^^^^^^^,</span>
+<span style="color: #6a737d;">   so we can't use the exact command. </span><span style="color: #6a737d;">*)</span>
+<span style="color: #d73a49;">Proof</span>.
+  <span style="color: #005cc5; background-color: #ffffff;">intros</span> A C.
+  <span style="color: #005cc5; background-color: #ffffff;">intros</span> proof_of_A proof_that_A_cannot_be_proven.
+  <span style="color: #005cc5; background-color: #ffffff;">unfold</span> not <span style="color: #005cc5;">in</span> proof_that_A_cannot_be_proven.
+  <span style="color: #005cc5; background-color: #ffffff;">pose</span> (proof_of_False := proof_that_A_cannot_be_proven proof_of_A).
+  <span style="color: #005cc5; background-color: #ffffff;">case</span> proof_of_False.
+<span style="color: #d73a49;">Qed</span>.
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org5019d5a" class="outline-3">
+<h3 id="org5019d5a"><span class="section-number-3">3.2</span> Types, definitions and notation</h3>
+<div class="outline-text-3" id="text-3-2">
+<p>
+"But, Ed," someone is doubtless saying, "What about Haskell?" To that person, I say here are your damn abstract data types.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-coq"><span style="color: #d73a49;">Inductive</span> <span style="color: #005cc5;">False</span> : <span style="color: #005cc5;">Prop</span> := .
+
+<span style="color: #d73a49;">Inductive</span> <span style="color: #005cc5;">True</span> : <span style="color: #005cc5;">Prop</span> :=
+  I : <span style="color: #005cc5;">True</span>.
+
+<span style="color: #d73a49;">Inductive</span> <span style="color: #6f42c1;">bool</span> : <span style="color: #005cc5;">Set</span> :=
+  | true : bool
+  | false : bool.
+</pre>
+</div>
+
+<p>
+<code>Inductive</code> is so named because you can define types inductively (as we'll see later).
+</p>
+
+<p>
+Coq also provides <code>Definition</code> and <code>Notation</code> vernaculars to abbreviate things.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-coq"><span style="color: #6a737d;">(* </span><span style="color: #6a737d;">This indicates (not A) and A -&gt; False are interchangable </span><span style="color: #6a737d;">*)</span>
+<span style="color: #d73a49;">Definition</span> <span style="color: #6f42c1;">not</span> (<span style="color: #24292e;">A</span>:<span style="color: #005cc5;">Prop</span>) := A -&gt; <span style="color: #005cc5;">False</span>.
+
+<span style="color: #6a737d;">(* </span><span style="color: #6a737d;">This creates an operator </span><span style="color: #6a737d;">*)</span>
+<span style="color: #d73a49;">Notation</span> <span style="color: #032f62;">"~ x"</span> := (not x) : type_scope.
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org25bd629" class="outline-3">
+<h3 id="org25bd629"><span class="section-number-3">3.3</span> Booleans</h3>
+<div class="outline-text-3" id="text-3-3">
+<p>
+The <code>bool</code> type is in the library <code>Bool</code>, which you load with
+</p>
+
+<div class="org-src-container">
+<pre class="src src-coq"><span style="color: #d73a49;">Require Import</span> Bool.
+</pre>
+</div>
+
+<p>
+Two functions it includes are:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-coq"><span style="color: #d73a49;">Definition</span> <span style="color: #6f42c1;">eqb</span> (<span style="color: #24292e;">b1 b2</span>:bool) : bool :=
+  <span style="color: #005cc5;">match</span> b1, b2 <span style="color: #005cc5;">with</span>
+    | true, true =&gt; true
+    | true, false =&gt; false
+    | false, true =&gt; false
+    | false, false =&gt; true
+  <span style="color: #005cc5;">end</span>.
+
+<span style="color: #d73a49;">Definition</span> <span style="color: #6f42c1;">Is_true</span> (<span style="color: #24292e;">b</span>:bool) :=
+  <span style="color: #005cc5;">match</span> b <span style="color: #005cc5;">with</span>
+    | true =&gt; <span style="color: #005cc5;">True</span>
+    | false =&gt; <span style="color: #005cc5;">False</span>
+  <span style="color: #005cc5;">end</span>.
+</pre>
+</div>
+
+<p>
+We see <code>True</code> is true:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-coq"><span style="color: #d73a49;">Theorem</span> <span style="color: #6f42c1;">true_is_True</span>: Is_true true.
+<span style="color: #d73a49;">Proof</span>.
+  <span style="color: #005cc5; background-color: #ffffff;">simpl</span>.
+  <span style="color: #005cc5;">exact</span> I.
+<span style="color: #d73a49;">Qed</span>.
+</pre>
+</div>
+
+<p>
+The tactic <code>simpl</code> simplifies the subgoal by evaluating the function on its arguments. Here's another application of <code>simpl</code>:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-coq"><span style="color: #d73a49;">Theorem</span> <span style="color: #6f42c1;">not_eqb_true_false</span>: ~(Is_true (eqb true false)).
+<span style="color: #d73a49;">Proof</span>.
+  <span style="color: #005cc5; background-color: #ffffff;">simpl</span>.
+  <span style="color: #005cc5;">exact</span> False_cannot_be_proven.
+<span style="color: #d73a49;">Qed</span>.
+</pre>
+</div>
+
+<p>
+We want some operations on Booleans. Here's or:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-coq"><span style="color: #d73a49;">Inductive</span> <span style="color: #6f42c1;">or</span> (<span style="color: #24292e;">A B</span>:<span style="color: #005cc5;">Prop</span>) : <span style="color: #005cc5;">Prop</span> :=
+  | or_introl : A -&gt; A \/ B
+  | or_intror : B -&gt; A \/ B
+<span style="color: #005cc5;">where</span> <span style="color: #032f62;">"A \/ B"</span> := (or A B) : type_scope.
+</pre>
+</div>
+
+<p>
+This defines four things:
+</p>
+
+<ol class="org-ol">
+<li><code>or</code>, a function which takes two Props and produces one Prop.</li>
+<li><code>or_introl</code>, a constructor that takes a proof of <code>A</code> and returns a proof of <code>(or A B)</code>.</li>
+<li><code>or_intror</code>, a constructor that takes a proof of <code>B</code> and returns a proof of <code>(or A B)</code>.</li>
+<li><code>\/</code> an operator interchangable with <code>or</code>.</li>
+</ol>
+
+<p>
+<code>and</code> is defined by
+</p>
+
+<div class="org-src-container">
+<pre class="src src-coq"><span style="color: #d73a49;">Inductive</span> <span style="color: #6f42c1;">and</span> (<span style="color: #24292e;">A B</span>:<span style="color: #005cc5;">Prop</span>) : <span style="color: #005cc5;">Prop</span> :=
+  conj : A -&gt; B -&gt; A /\ B
+
+<span style="color: #005cc5;">where</span> <span style="color: #032f62;">"A /\ B"</span> := (and A B) : type_scope.
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org0020980" class="outline-3">
+<h3 id="org0020980"><span class="section-number-3">3.4</span> One final tactic</h3>
+<div class="outline-text-3" id="text-3-4">
+<p>
+The <code>destruct</code> tactic is a little more versatile than <code>case</code>. It's recommended for types which have a single constructor (like <code>and</code>).
+</p>
+
+<div class="org-src-container">
+<pre class="src src-coq"><span style="color: #d73a49;">Theorem</span> <span style="color: #6f42c1;">and_commutes__again</span> : (<span style="color: #005cc5;">forall</span> <span style="color: #24292e;">A B</span>, A /\ B -&gt; B /\ A).
+<span style="color: #d73a49;">Proof</span>.
+  <span style="color: #005cc5; background-color: #ffffff;">intros</span> A B.
+  <span style="color: #005cc5; background-color: #ffffff;">intros</span> A_and_B.
+  <span style="color: #005cc5; background-color: #ffffff;">destruct</span> A_and_B <span style="color: #005cc5;">as</span> [ proof_of_A proof_of_B].
+  <span style="color: #005cc5; background-color: #ffffff;">refine</span> (conj _ _).
+    <span style="color: #005cc5;">exact</span> proof_of_B.
+
+    <span style="color: #005cc5;">exact</span> proof_of_A.
+<span style="color: #d73a49;">Qed</span>.
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org092691a" class="outline-3">
+<h3 id="org092691a"><span class="section-number-3">3.5</span> Exercises</h3>
+<div class="outline-text-3" id="text-3-5">
+<ol class="org-ol">
+<li>Prove <code>~(True -&gt; False)</code> using <code>refine</code>.</li>
+<li>Adapt the proofs in part 1 to use bools instead of Props.</li>
+<li>Prove <code>(forall a : bool, Is_true (eqb a a))</code> using "<code>case a.</code>".</li>
+<li>Prove <code>(forall A B : Prop, A -&gt; A \/ B)</code>. [Hint: you will need to one of <code>or_introl</code> and <code>or_intror</code>.]</li>
+<li>Prove <code>or</code> commutes.</li>
+<li>Prove <code>(forall A B : Prop, A -&gt; B -&gt; A /\ B)</code>.</li>
+<li>Prove <code>and</code> commutes without using <code>case</code> instead of <code>destruct</code>.</li>
+</ol>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgd0c0e80" class="outline-2">
+<h2 id="orgd0c0e80"><span class="section-number-2">4</span> Part 4</h2>
+<div class="outline-text-2" id="text-4">
+</div>
+<div id="outline-container-org1dbadd0" class="outline-3">
+<h3 id="org1dbadd0"><span class="section-number-3">4.1</span> Booleans continued</h3>
+<div class="outline-text-3" id="text-4-1">
+<p>
+We saw earlier that <code>and</code> and <code>or</code> Props were not functions, but Inductive types, where we defined instances that can only be defined by calling obscure functions called constructors. <code>bool</code> is an Inductive type, with constructors <code>true</code> and <code>false</code>. <code>true</code> and <code>false</code> have no arguments, so they are more like constants than functions. 
+</p>
+
+<p>
+To manipulate bools, we could use Inductive types like we did for Prop, but it will be easier to use functions. Some built-in ones are:
+</p>
+
+<ul class="org-ul">
+<li><code>andb</code>, with operator <code>&amp;&amp;</code>.</li>
+<li><code>orb</code>, with operator space.</li>
+<li><code>negb</code>.</li>
+<li><code>iff</code>, with operator <code>&lt;-&gt;</code>.</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-orgd07488d" class="outline-3">
+<h3 id="orgd07488d"><span class="section-number-3">4.2</span> More tactics</h3>
+<div class="outline-text-3" id="text-4-2">
+<ul class="org-ul">
+<li>If a hypothesis (<code>intros H.</code>) contains a function call with all its arguments, then use <code>simpl in H</code> to expand it.</li>
+<li>The <code>admit</code> tactic marks the proof as complete, even if some subgoals are complete. [Exercises completed using <code>admit</code> are not acceptable.]</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-orgf5de3fd" class="outline-3">
+<h3 id="orgf5de3fd"><span class="section-number-3">4.3</span> Exercises</h3>
+<div class="outline-text-3" id="text-4-3">
+<ol class="org-ol">
+<li>Prove <code>(forall a b, Is_true (orb a b) &lt;-&gt; Is_true a \/ Is_true b)</code>. [Hint: you'll need every tactic we've seen so far.]</li>
+<li>Prove the same thing with <code>andb</code> and <code>/\</code>.</li>
+<li>Prove the same thing with <code>negb</code> and <code>~</code>.</li>
+</ol>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org1724a9d" class="outline-2">
+<h2 id="org1724a9d"><span class="section-number-2">5</span> What's next?</h2>
+<div class="outline-text-2" id="text-5">
+<p>
+That is, what sections of Mike Nahas' tutorial have I not got round to abridging? What remains are introduction to quantifiers, the natural numbers (<code>nat</code>) and lists.
+</p>
+</div>
+</div>
+
+<div id="outline-container-org33ed89e" class="outline-2">
+<h2 id="org33ed89e"><span class="section-number-2">6</span> Revision guide</h2>
+<div class="outline-text-2" id="text-6">
+<ul class="org-ul">
+<li>If the subgoal starts with "<code>(forall &lt;name&gt; : &lt;type&gt;, ...</code>" Then use tactic "<code>intros &lt;name&gt;.</code>"</li>
+<li>If the subgoal starts with "<code>&lt;type&gt; -&gt; ...</code>" Then use tactic "<code>intros &lt;name&gt;.</code>"</li>
+<li>If the subgoal matches an hypothesis, Then use tactic "<code>exact &lt;hyp_name&gt;.</code>"</li>
+<li>If you have an hypothesis "<code>&lt;hyp_name&gt;: &lt;type1&gt; -&gt; &lt;type2&gt; -&gt; ... -&gt; &lt;result_type&gt;</code>" OR an hypothesis "<code>&lt;hyp_name&gt;: (forall &lt;obj1&gt;:&lt;type1&gt;, (forall &lt;obj2&gt;:&lt;type2&gt;, ... &lt;result_type&gt; ...))</code>" OR any combination of "<code>-&gt;</code>" and "<code>forall", AND you have hypotheses of type "=type1", "=type2</code>"&#x2026;, Then use tactic "<code>pose</code>" to create something of type "<code>result_type</code>".</li>
+<li>If you have subgoal "<code>&lt;goal_type&gt;</code>" AND have hypothesis "<code>&lt;hyp_name&gt;: &lt;type1&gt; -&gt; &lt;type2&gt; -&gt; ... -&gt; &lt;typeN&gt; -&gt; &lt;goal_type&gt;", Then use tactic "=refine (&lt;hyp_name&gt; _ ...).</code>" with N underscores.</li>
+<li>If your subgoal is "<code>True", Then use tactic "=exact I</code>".</li>
+<li>If your subgoal is "<code>~&lt;type&gt;</code>" or "<code>~(&lt;term&gt;)</code>" or "<code>(not &lt;term&gt;)", Then use tactic "=intros</code>".</li>
+<li>If any hypothesis is "<code>&lt;name&gt; : False", Then use tactic "=case &lt;name&gt;.</code>"</li>
+<li>If the current subgoal contains a function call with all its arguments, Then use the tactic "<code>simpl</code>".</li>
+<li>If there is a hypothesis "<code>&lt;name&gt;</code>" of a created type AND that hypothesis is used in the subgoal, Then you can try the tactic "<code>case &lt;name&gt;</code>"</li>
+<li>If the subgoal's top-most term is a created type, Then use "<code>refine (&lt;name_of_constructor&gt; _ ...)</code>".</li>
+<li>If a hypothesis "<code>&lt;name&gt;</code>" is a created type with only one constructor, Then use "<code>destruct &lt;name&gt; as &lt;arg1&gt; &lt;arg2&gt; ... "</code> to extract its arguments</li>
+<li>If a hypothesis "<code>&lt;name&gt;</code>" contain a function call with all its arguments, Then use the tactic "<code>simpl in &lt;name&gt;</code>"</li>
+<li>If you have a subgoal that you want to ignore for a while, Then use the tactic "=admit"</li>
+<li>If the current subgoal starts "<code>exists &lt;name&gt;, ...</code>" Then create a witness and use "<code>refine (ex_intro _ witness _)</code>"</li>
+<li>If you have a hypothesis "<code>&lt;name&gt; : &lt;a&gt; = &lt;b&gt;</code>" AND "<code>&lt;a&gt;</code>" in your current subgoal Then use the tactic "<code>rewrite &lt;name&gt;</code>"</li>
+<li>If you have a hypothesis "<code>&lt;name&gt; : &lt;a&gt; = &lt;b&gt;</code>" AND "<code>&lt;b&gt;</code>" in your current subgoal Then use the tactic "<code>rewrite &lt;- &lt;name&gt;</code>"</li>
+<li>If you have a hypothesis "<code>&lt;name&gt; : (&lt;constructor1&gt; ...) = (&lt;constructor2&gt; ...)</code>" OR "<code>&lt;name&gt; : &lt;constant1&gt; = &lt;constant2&gt;</code>", then use the tactic "<code>discriminate &lt;name&gt;</code>"</li>
+<li>If there is a hypothesis "<code>&lt;name&gt;</code>" of a created type AND that hypothesis is used in the subgoal, AND the type has a recursive definition Then you can try the tactic "<code>elim &lt;name&gt;</code>"</li>
+</ul>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<p class="author">Author: Mike Nahas (arr. Edward Hart)</p>
+<p class="date">Created: 2018-02-24 Sat 00:30</p>
+<p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
+</div>
+</body>
+</html>
